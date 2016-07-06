@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+  
+<mapper namespace="com.yonyou.bpm.engine.mapper.UserMapper">
+<!-- id全局唯一 -->
+  <select id="extselectUserById" parameterType="string" resultMap="extUserResultMap">
+    SELECT * FROM BPM_ID_USER WHERE ID_ = #{userId}
+  </select>
+  
+  <select id="extselectUserList" parameterType="string" resultMap="extUserResultMap">
+     SELECT * FROM BPM_ID_USER WHERE ID_ IN 
+	<foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
+		#{userId}
+	</foreach>
+  </select>
+  
+  <select id="bpmSelectUsersByQueryCriteria" parameterType="com.yonyou.bpm.core.user.entity.UserEntity" resultMap="extUserResultMap">
+    select * from BPM_ID_USER RES
+   <where>
+      <if test="id != null">
+        RES.ID_ = #{id}
+      </if>
+      <if test="name != null">
+        and RES.NAME_ = #{name}
+      </if>
+      <if test="nameLike != null">
+        and RES.NAME_ like #{nameLike}
+      </if>
+      <if test="code != null">
+        and RES.CODE_ = #{code}
+      </if>
+      <if test="mail != null">
+        and RES.MAIL_ = #{mail}
+      </if>
+      <if test="phone != null">
+        and RES.PHONE_ = #{phone}
+      </if>
+      <if test="tenantid != null">
+        and RES.TENANT_ID_ = #{tenantid}
+      </if>
+    </where>
+     <if test="orderBy!=null">
+   		 ${orderBy}
+   	 </if>
+  </select>
+
+  <select id="bpmSelectUserCountByQueryCriteria" parameterType="com.yonyou.bpm.core.user.entity.UserEntity" resultType="long">
+    select count(distinct RES.ID_)
+    <include refid="bpmSelectUsersByQueryCriteriaSql"/>
+  </select>
+  
+  <sql id="bpmSelectUsersByQueryCriteriaSql">  
+    from ${prefix}BPM_ID_USER RES
+    <where>
+      <if test="id != null">
+        RES.ID_ = #{id}
+      </if>
+      <if test="name != null">
+        and RES.NAME_ = #{name}
+      </if>
+      <if test="nameLike != null">
+        and RES.NAME_ like #{nameLike}
+      </if>
+      <if test="code != null">
+        and RES.CODE_ = #{code}
+      </if>
+      <if test="mail != null">
+        and RES.MAIL_ = #{mail}
+      </if>
+      <if test="phone != null">
+        and RES.PHONE_ = #{phone}
+      </if>
+      <if test="tenantid != null">
+        and RES.TENANT_ID_ = #{tenantid}
+      </if>
+    </where>
+  </sql>
+  
+  <resultMap id="extUserResultMap" type="com.yonyou.bpm.core.user.entity.UserEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />
+    <result property="code" column="CODE_" jdbcType="VARCHAR" />
+    <result property="name" column="NAME_" jdbcType="VARCHAR" />
+    <result property="msg" column="MSG_" jdbcType="VARCHAR" />
+    <result property="password" column="PASSWORD_" jdbcType="VARCHAR" />
+    <result property="mail" column="MAIL_" jdbcType="VARCHAR" />
+    <result property="phone" column="PHONE_" jdbcType="VARCHAR" />
+    <result property="tenantid" column="TENANT_ID_" jdbcType="VARCHAR" />
+    <result property="createTime" column="CREATE_TIME_" jdbcType="TIMESTAMP" />
+    <result property="modifyTime" column="MODIFY_TIME_" jdbcType="TIMESTAMP" />
+    <result property="enable" column="ENABLE_" jdbcType="VARCHAR" />
+    <result property="org" column="ORG_" jdbcType="VARCHAR" />
+    <result property="salt" column="SALT_" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  
+  <insert id="extinsertUser" parameterType="com.yonyou.bpm.core.user.entity.UserEntity">
+    insert into BPM_ID_USER(ID_, CODE_, NAME_, MSG_,PASSWORD_,MAIL_,PHONE_,TENANT_ID_,CREATE_TIME_,MODIFY_TIME_,ENABLE_,REV_,SALT_,ORG_)
+    values (
+      #{id ,jdbcType=VARCHAR},
+      #{code ,jdbcType=VARCHAR},
+      #{name ,jdbcType=VARCHAR},
+      #{msg ,jdbcType=VARCHAR},
+      #{password ,jdbcType=VARCHAR},
+      #{mail ,jdbcType=VARCHAR},
+      #{phone ,jdbcType=VARCHAR},
+      #{tenantid ,jdbcType=VARCHAR},
+      #{createTime ,jdbcType=TIMESTAMP},
+      #{modifyTime ,jdbcType=TIMESTAMP},
+      #{enable ,jdbcType=VARCHAR},
+      1,
+      #{salt ,jdbcType=VARCHAR},
+      #{org ,jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <update id="extupdateUser" parameterType="com.yonyou.bpm.core.user.entity.UserEntity">
+    update BPM_ID_USER
+    set
+      CODE_ = #{code, jdbcType=VARCHAR},
+      NAME_ = #{name, jdbcType=VARCHAR},
+      MSG_ = #{msg, jdbcType=VARCHAR},
+      PASSWORD_ = #{password, jdbcType=VARCHAR},
+      MAIL_ = #{mail, jdbcType=VARCHAR},
+      PHONE_ = #{phone, jdbcType=VARCHAR},
+      TENANT_ID_ = #{tenantid, jdbcType=VARCHAR},
+      MODIFY_TIME_ = #{modifyTime, jdbcType=TIMESTAMP},
+      ORG_ = #{org, jdbcType=VARCHAR}
+      
+    where ID_ = #{id}
+  </update>
+  
+    <!-- USER DELETE -->
+
+  <delete id="deleteUser" parameterType="com.yonyou.bpm.core.user.entity.UserEntity">
+    delete from BPM_ID_USER 
+    where ID_ = #{id} 
+  </delete>
+  
+  <!--sqlserver batch insert -->
+  <insert id="sqlserverBatchExtinsertUser" parameterType="java.util.List">
+    insert into BPM_ID_USER(ID_, CODE_, NAME_, MSG_,PASSWORD_,MAIL_,PHONE_,TENANT_ID_,CREATE_TIME_,MODIFY_TIME_,ENABLE_,REV_,SALT_,ORG_)
+    values 
+	<foreach collection="list" item="item" index="index" separator="," >  
+        (
+          #{item.id ,jdbcType=VARCHAR},
+	      #{item.code ,jdbcType=VARCHAR},
+	      #{item.name ,jdbcType=VARCHAR},
+	      #{item.msg ,jdbcType=VARCHAR},
+	      #{item.password ,jdbcType=VARCHAR},
+	      #{item.mail ,jdbcType=VARCHAR},
+	      #{item.phone ,jdbcType=VARCHAR},
+	      #{item.tenantid ,jdbcType=VARCHAR},
+	      #{item.createTime ,jdbcType=TIMESTAMP},
+	      #{item.modifyTime ,jdbcType=TIMESTAMP},
+	      #{item.enable ,jdbcType=VARCHAR},
+	      1,
+	      #{item.salt ,jdbcType=VARCHAR},
+	      #{item.org ,jdbcType=VARCHAR}
+        )  
+    </foreach>
+  </insert>
+   <!--oracle batch insert -->
+  <insert id="oracleBatchExtinsertUser" parameterType="java.util.List">
+    insert into BPM_ID_USER(ID_, CODE_, NAME_, MSG_,PASSWORD_,MAIL_,PHONE_,TENANT_ID_,CREATE_TIME_,MODIFY_TIME_,ENABLE_,REV_,SALT_,ORG_)
+	<foreach collection="list" item="item" index="index" separator="union" >  
+        select 
+          #{item.id ,jdbcType=VARCHAR},
+	      #{item.code ,jdbcType=VARCHAR},
+	      #{item.name ,jdbcType=VARCHAR},
+	      #{item.msg ,jdbcType=VARCHAR},
+	      #{item.password ,jdbcType=VARCHAR},
+	      #{item.mail ,jdbcType=VARCHAR},
+	      #{item.phone ,jdbcType=VARCHAR},
+	      #{item.tenantid ,jdbcType=VARCHAR},
+	      #{item.createTime ,jdbcType=TIMESTAMP},
+	      #{item.modifyTime ,jdbcType=TIMESTAMP},
+	      #{item.enable ,jdbcType=VARCHAR},
+	      1,
+	      #{item.salt ,jdbcType=VARCHAR},
+	      #{item.org ,jdbcType=VARCHAR}
+	      from dual
+    </foreach>
+  </insert>
+<!--   oracle batch update -->
+  <update id="oracleBatchExtupdateUser" parameterType="java.util.List">
+      <foreach collection="list" item="item" separator="" open="begin" close="end;"> 
+             update BPM_ID_USER set
+                  CODE_ = #{item.code, jdbcType=VARCHAR},
+			      NAME_ = #{item.name, jdbcType=VARCHAR},
+			      MSG_ = #{item.msg, jdbcType=VARCHAR},
+			      PASSWORD_ = #{item.password, jdbcType=VARCHAR},
+			      MAIL_ = #{item.mail, jdbcType=VARCHAR},
+			      PHONE_ = #{item.phone, jdbcType=VARCHAR},
+			      TENANT_ID_ = #{item.tenantid, jdbcType=VARCHAR},
+			      MODIFY_TIME_ = #{item.modifyTime, jdbcType=TIMESTAMP},
+			      ORG_ = #{item.org, jdbcType=VARCHAR}  
+             where ID_ = #{item.id} ;
+      </foreach> 
+  </update>
+  <!--ssmql batch update -->
+  <update id="sqlserverBatchExtupdateUser" parameterType="java.util.List">
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+             update BPM_ID_USER   
+             <set>  
+                  CODE_ = #{item.code, jdbcType=VARCHAR},
+			      NAME_ = #{item.name, jdbcType=VARCHAR},
+			      MSG_ = #{item.msg, jdbcType=VARCHAR},
+			      PASSWORD_ = #{item.password, jdbcType=VARCHAR},
+			      MAIL_ = #{item.mail, jdbcType=VARCHAR},
+			      PHONE_ = #{item.phone, jdbcType=VARCHAR},
+			      TENANT_ID_ = #{item.tenantid, jdbcType=VARCHAR},
+			      MODIFY_TIME_ = #{item.modifyTime, jdbcType=TIMESTAMP},
+			      ORG_ = #{item.org, jdbcType=VARCHAR}  
+             </set>  
+             where ID_ = #{item.id} 
+      </foreach> 
+  </update>
+</mapper>

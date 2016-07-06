@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yonyou.bpm.org.entity.UserEntity">
+
+  <resultMap id="UserEntityResultMap" type="com.yonyou.bpm.org.entity.UserEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />
+    <result property="code" column="CODE_" jdbcType="INTEGER" />
+    <result property="name" column="NAME_" jdbcType="VARCHAR" />
+    <result property="msg" column="MSG_" jdbcType="VARCHAR" />
+    <result property="createTime" column="CREATE_TIME_" jdbcType="CHAR" />
+    <result property="modifiedTime" column="MODIFIED_TIME_" jdbcType="CHAR" />
+    <result property="creator" column="CREATOR_" jdbcType="VARCHAR" />
+    <result property="modifier" column="MODIFIER_" jdbcType="VARCHAR" />
+        
+    <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+    <result property="deptId" column="DEPT_ID_" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="selectAllUserEntity" parameterType="string" resultMap="UserEntityResultMap">
+    select 
+		ID_,
+		CODE_,
+		NAME_,
+		MSG_,
+		CREATE_TIME_,
+		MODIFIED_TIME_,
+		CREATOR_,
+		MODIFIER_,
+		TENANT_ID_,
+		DEPT_ID_
+    from BPM_ORG_User 
+    where TENANT_ID_ = #value:VARCHAR#
+    order by TENANT_ID_,DEPT_ID_,CODE_
+  </select>
+	
+  <select id="selectByUserEntity" parameterType="com.yonyou.bpm.org.entity.UserEntity" resultMap="UserEntityResultMap">
+    select 
+		ID_,
+		CODE_,
+		NAME_,
+		MSG_,
+		CREATE_TIME_,
+		MODIFIED_TIME_,
+		CREATOR_,
+		MODIFIER_,
+		TENANT_ID_,
+		DEPT_ID_
+    from BPM_ORG_User 
+     <where>
+	    <if test="id!=null">
+	    	ID_ = #id:VARCHAR#
+	    </if>
+	    <if test="code!=null">
+	    	CODE_ = #code:VARCHAR#
+	    </if>
+	    <if test="name!=null">
+	    	NAME_ like '%$name$%'
+	    </if>
+	    <if test="tenantId!=null">
+	    	TENANT_ID_ = #tenantId:VARCHAR#
+	    </if>
+	    <if test="deptId!=null">
+	    	DEPT_ID_ = #deptId:VARCHAR#
+	    </if>
+   	  </where>
+	  order by TENANT_ID_,DEPT_ID_,CODE_
+   </select>
+   
+   <select id="selectUserEntityByNativeQuery" parameterType="java.util.Map" resultMap="UserEntityResultMap">
+   		${sql}
+   </select>
+   
+</mapper>

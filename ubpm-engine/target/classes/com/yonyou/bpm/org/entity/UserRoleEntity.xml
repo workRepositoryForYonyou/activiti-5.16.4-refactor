@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yonyou.bpm.org.entity.UserRoleEntity">
+
+  <resultMap id="UserRoleEntityResultMap" type="com.yonyou.bpm.org.entity.UserRoleEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />        
+    <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+    <result property="userId" column="USER_ID_" jdbcType="VARCHAR" />
+    <result property="roleId" column="ROLE_ID_" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="selectAllUserRoleEntity" parameterType="string" resultMap="UserRoleEntityResultMap">
+    select 
+		ID_,
+		TENANT_ID_,
+		USER_ID_,
+		ROLE_ID_
+    from BPM_ORG_USER_ROLE
+    where TENANT_ID_ = #value:VARCHAR#
+    order by TENANT_ID_,USER_ID_
+  </select>
+	
+  <select id="selectByUserRoleEntity" parameterType="com.yonyou.bpm.org.entity.UserRoleEntity" resultMap="UserRoleEntityResultMap">
+    select 
+		ID_,
+		TENANT_ID_,
+		USER_ID_,
+		ROLE_ID_
+    from BPM_ORG_USER_ROLE 
+     <where>
+	    <if test="id!=null">
+	    	ID_ = #id:VARCHAR#
+	    </if>
+	    <if test="tenantId!=null">
+	    	TENANT_ID_ = #tenantId:VARCHAR#
+	    </if>
+	    <if test="userId!=null">
+	    	USER_ID_ = #userId:VARCHAR#
+	    </if>
+	    <if test="roleId!=null">
+	    	ROLE_ID_ = #roleId:VARCHAR#
+	    </if>
+   	  </where>
+   	  order by TENANT_ID_,USER_ID_
+   </select>
+   
+   <select id="selectUserRoleEntityByNativeQuery" parameterType="java.util.Map" resultMap="UserRoleEntityResultMap">
+   		${sql}
+   </select>
+   
+</mapper>

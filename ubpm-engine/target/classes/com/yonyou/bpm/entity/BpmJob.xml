@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+  
+<mapper namespace="com.yonyou.engine.impl.persistence.entity.JobEntity">
+
+  <!-- JOB RESULTMAP (FOR TIMER AND MESSAGE) -->
+
+  <resultMap id="bpmjobResultMap" type="org.activiti.engine.impl.persistence.entity.JobEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />
+    <result property="revision" column="REV_" jdbcType="INTEGER" />
+    <result property="lockOwner" column="LOCK_OWNER_" jdbcType="VARCHAR" />
+    <result property="lockExpirationTime" column="LOCK_EXP_TIME_" jdbcType="TIMESTAMP" />
+    <result property="exclusive" column="EXCLUSIVE_" jdbcType="BOOLEAN" />
+    <result property="executionId" column="EXECUTION_ID_" jdbcType="VARCHAR" />
+    <result property="processInstanceId" column="PROCESS_INSTANCE_ID_" jdbcType="VARCHAR" />
+    <result property="processDefinitionId" column="PROC_DEF_ID_" jdbcType="VARCHAR" />
+    <result property="retries" column="RETRIES_" jdbcType="INTEGER" />
+    <result property="exceptionByteArrayRef" column="EXCEPTION_STACK_ID_" typeHandler="ByteArrayRefTypeHandler" />
+    <result property="exceptionMessage" column="EXCEPTION_MSG_" jdbcType="VARCHAR" />
+    <result property="jobHandlerType" column="HANDLER_TYPE_" jdbcType="VARCHAR" />
+    <result property="jobHandlerConfiguration" column="HANDLER_CFG_" jdbcType="VARCHAR" />
+    <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+    <discriminator javaType="string" column="TYPE_">
+      <case value="message" resultMap="bpmMessageResultMap"/> 
+      <case value="timer" resultMap="bpmTimerResultMap"/> 
+    </discriminator>
+  </resultMap>
+   <resultMap id="bpmMessageResultMap" type="org.activiti.engine.impl.persistence.entity.MessageEntity" extends="bpmjobResultMap"/>
+
+  <resultMap id="bpmTimerResultMap" type="org.activiti.engine.impl.persistence.entity.TimerEntity" extends="bpmjobResultMap">
+    <result property="duedate" column="DUEDATE_" jdbcType="TIMESTAMP" />
+    <result property="repeat" column="REPEAT_" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- JOB SELECT (FOR TIMER AND MESSAGE) -->  
+
+  <select id="bpmSelectJobByQueryCriteria" parameterType="com.yonyou.bpm.engine.impl.BpmJobQueryImpl" resultMap="bpmjobResultMap">
+  	${limitBefore}
+    select RES.* ${limitBetween}
+    <include refid="bpmSelectJobByQueryCriteriaSql"/>
+    ${orderBy}
+    ${limitAfter}
+  </select>
+
+  <select id="bpmSelectJobCountByQueryCriteria" parameterType="com.yonyou.bpm.engine.impl.BpmJobQueryImpl" resultType="long">
+    select count(distinct RES.ID_)
+    <include refid="bpmSelectJobByQueryCriteriaSql"/>
+  </select>
+  
+  <sql id="bpmSelectJobByQueryCriteriaSql">
+    from ${prefix}ACT_RU_JOB RES
+    <if test="deploymentIds != null &amp;&amp; deploymentIds.size() &gt; 0">
+        left outer join ${prefix}ACT_RE_PROCDEF DEPLOY_P ON RES.PROC_DEF_ID_ = DEPLOY_P.ID_
+     </if>
+    <if test="executable">
+        LEFT OUTER JOIN ${prefix}ACT_RU_EXECUTION PI ON PI.ID_ = RES.PROCESS_INSTANCE_ID_
+    </if>
+    
+    <where>
+      <if test="id != null">
+        RES.ID_ = #{id}
+      </if>
+      <if test="processInstanceId != null">
+        and RES.PROCESS_INSTANCE_ID_ = #{processInstanceId}
+      </if>
+      <if test="executionId != null">
+        and RES.EXECUTION_ID_ = #{executionId}
+      </if>
+      <if test="processDefinitionId != null">
+        and RES.PROC_DEF_ID_ = #{processDefinitionId}
+      </if>
+      <if test="retriesLeft">
+        and RES.RETRIES_ &gt; 0
+      </if>
+      <if test="executable">
+        and (RES.RETRIES_ &gt; 0)
+        and (RES.DUEDATE_ is null or RES.DUEDATE_ &lt;= #{now, jdbcType=TIMESTAMP})
+        and (
+            (RES.EXECUTION_ID_ is null)
+            or 
+            (PI.SUSPENSION_STATE_ = 1)     
+      )
+      </if>
+      <if test="onlyTimers">
+        and RES.TYPE_ = 'timer'
+      </if>
+      <if test="onlyMessages">
+        and RES.TYPE_ = 'message'
+      </if>
+      <if test="duedateHigherThan != null">
+        and RES.DUEDATE_ &gt; #{duedateHigherThan}
+      </if>
+      <if test="duedateLowerThan != null">
+        and RES.DUEDATE_ &lt; #{duedateLowerThan}
+      </if>
+      <if test="duedateHigherThanOrEqual != null">
+        and RES.DUEDATE_ &gt;= #{duedateHigherThanOrEqual}
+      </if>
+      <if test="duedateLowerThanOrEqual != null">
+        and RES.DUEDATE_ &lt;= #{duedateLowerThanOrEqual}
+      </if>
+      <if test="withException">
+      	and (RES.EXCEPTION_MSG_ is not null or RES.EXCEPTION_STACK_ID_ is not null)
+      </if>
+      <if test="exceptionMessage">
+      	and RES.EXCEPTION_MSG_ = #{exceptionMessage}
+      </if>
+      <if test="tenantId != null">
+        and RES.TENANT_ID_ = #{tenantId}
+      </if>
+      <if test="tenantIdLike != null">
+        and RES.TENANT_ID_ like #{tenantIdLike}
+      </if>
+      <if test="withoutTenantId">
+        and (RES.TENANT_ID_ = '' or RES.TENANT_ID_ is null)
+      </if>
+      <if test="deploymentIds != null &amp;&amp; deploymentIds.size() &gt; 0">
+        and DEPLOY_P.DEPLOYMENT_ID_ IN
+        <foreach item="deployment" index="index" collection="deploymentIds" 
+                 open="(" separator="," close=")">
+          #{deployment}
+        </foreach>
+      </if>
+    </where>
+  </sql>
+</mapper>

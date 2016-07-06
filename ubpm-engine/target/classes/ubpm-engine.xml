@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	
+	<import resource="classpath:ubpm-engine-extension.xml"/>
+	<import resource="classpath:ubpm-engine-scrt.xml"/>
+	
+	<bean
+		class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+		<property name="fileEncoding" value="utf-8" />
+		<property name="ignoreResourceNotFound" value="false" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="nullValue" value="" />
+		<property name="localOverride" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:defaults/db.properties</value>
+				<value>classpath:defaults/engine.properties</value>
+				<value>classpath:defaults/mail.properties</value>
+				<value>file:${dir.server.conf}/db.properties</value>
+				<value>file:${dir.server.conf}/engine.properties</value>
+				<value>file:${dir.server.conf}/mail.properties</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="dataSource" class="com.yonyou.bpm.engine.conf.BpmEngineDataSourceFactory">
+		<property name="jndi" value="${jdbc.jndi}" />
+		<property name="driverClass" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="userName" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="processEngineConfiguration" name="processEngineConfiguration"
+		class="com.yonyou.bpm.engine.conf.BpmEngineConfiguration" autowire="default">
+
+		<property name="databaseSchemaUpdate" value="${db.schema.update}" />
+		<property name="jobExecutorActivate" value="${engine.activate.jobexecutor}" />
+		<property name="history" value="${engine.history.level}" />
+		<property name="activityFontName" value="${diagram.font}" />
+		<property name="labelFontName" value="${diagram.font.label}" />
+		
+		<property name="mailServerHost" value="${mail.server.host}" />
+		<property name="mailServerPort" value="${mail.server.port}" />
+		<property name="mailServerUseSSL" value="${mail.server.ssl}" />
+		<property name="mailServerUsername" value="${mail.server.username}" />
+		<property name="mailServerPassword" value="${mail.server.password}" />
+		<property name="mailServerUseTLS" value="${mail.server.tls}" />
+		<property name="mailServerDefaultFrom" value="${mail.default.from}" />
+		
+		<property name="databaseSchema" value="${jdbc.db.schema}" />
+		<property name="databaseType" value="${jdbc.type}" />
+		
+		<property name="loggingTraceEnable" value="${log.trace.enable}" />
+		
+		<property name="enableDatabaseEventLogging" value="${db.eventlogging.enable}" />
+		
+	 <property name="beans">
+	    <map>
+	      <entry key="bpmBean" value-ref="bpmBean" />
+	      <entry key="bpmbean" value-ref="bpmBean" />
+	    </map>
+	  </property>
+  </bean>
+  
+  
+  <bean id="bpmBean" class="com.yonyou.bpm.utils.BpmUtilsBean" />
+</beans>

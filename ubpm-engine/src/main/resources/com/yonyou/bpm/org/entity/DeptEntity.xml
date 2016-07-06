@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yonyou.bpm.org.entity.DeptEntity">
+
+  <resultMap id="DeptEntityResultMap" type="com.yonyou.bpm.org.entity.DeptEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />
+    <result property="code" column="CODE_" jdbcType="INTEGER" />
+    <result property="name" column="NAME_" jdbcType="VARCHAR" />
+    <result property="msg" column="MSG_" jdbcType="VARCHAR" />
+    <result property="createTime" column="CREATE_TIME_" jdbcType="CHAR" />
+    <result property="modifiedTime" column="MODIFIED_TIME_" jdbcType="CHAR" />
+    <result property="creator" column="CREATOR_" jdbcType="VARCHAR" />
+    <result property="modifier" column="MODIFIER_" jdbcType="VARCHAR" />
+        
+    <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+    <result property="fatherId" column="FATHER_ID_" jdbcType="VARCHAR" />
+    <result property="depth" column="DEPTH_" jdbcType="INTEGER" />
+  </resultMap>
+
+  <select id="selectAllDeptEntity" parameterType="string" resultMap="DeptEntityResultMap">
+    select 
+		ID_,
+		CODE_,
+		NAME_,
+		MSG_,
+		CREATE_TIME_,
+		MODIFIED_TIME_,
+		CREATOR_,
+		MODIFIER_,
+		TENANT_ID_,
+		FATHER_ID_,
+		DEPTH_
+    from BPM_ORG_DEPT 
+    where TENANT_ID_ = #value:VARCHAR#
+  </select>
+	
+  <select id="selectByDeptEntity" parameterType="com.yonyou.bpm.org.entity.DeptEntity" resultMap="DeptEntityResultMap">
+    select 
+		ID_,
+		CODE_,
+		NAME_,
+		MSG_,
+		CREATE_TIME_,
+		MODIFIED_TIME_,
+		CREATOR_,
+		MODIFIER_,
+		TENANT_ID_,
+		FATHER_ID_,
+		DEPTH_
+    from BPM_ORG_DEPT 
+     <where>
+	    <if test="id!=null">
+	    	ID_ = #id:VARCHAR#
+	    </if>
+	    <if test="code!=null">
+	    	CODE_ = #code:VARCHAR#
+	    </if>
+	    <if test="name!=null">
+	    	NAME_ like '%$name$%'
+	    </if>
+	    <if test="tenantId!=null">
+	    	TENANT_ID_ = #tenantId:VARCHAR#
+	    </if>
+	    <if test="fatherId!=null">
+	    	FATHER_ID_ = #fatherId:VARCHAR#
+	    </if>
+	    <if test="depth!=null">
+	    	DEPTH_ = #depth:INTEGER#
+	    </if>
+   	  </where>
+	  order by DEPTH_,CODE_
+   </select>
+   
+   <select id="selectDeptEntityByNativeQuery" parameterType="java.util.Map" resultMap="DeptEntityResultMap">
+   		${sql}
+   </select>
+   
+</mapper>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yonyou.bpm.core.entity.CategoryEntity">
+
+  <!-- CATEGORY INSERT -->
+
+  <insert id="insertBpmCategory" parameterType="com.yonyou.bpm.core.entity.CategoryEntity" >
+    insert into BPM_CAT_CATEGORY(ID_, REV_, CODE_, NAME_, TYPE_, PRIORITY_, CREATE_TIME_, MODIFY_TIME_,PARENT_,ENABLE_,TENANT_ID_,ORG_,ORG_CODE_,ORG_NAME_,APPLICATION_,APPLICATION_CODE_,APPLICATION_NAME_,APPLICATION_TOKEN_, APPLICATION_CREDENTIAL_, IPWHITELIST_)
+    values (
+      #{id ,jdbcType=VARCHAR},
+      1,
+      #{code ,jdbcType=VARCHAR},
+      #{name ,jdbcType=VARCHAR},
+      #{type ,jdbcType=VARCHAR},
+      #{priority ,jdbcType=INTEGER},
+      #{createTime ,jdbcType=TIMESTAMP},
+      #{modifyTime ,jdbcType=TIMESTAMP},
+      #{parent ,jdbcType=VARCHAR},
+      #{enable ,jdbcType=VARCHAR},
+      #{tenantId ,jdbcType=VARCHAR},
+      #{org ,jdbcType=VARCHAR},
+      #{org_code ,jdbcType=VARCHAR},
+      #{org_name ,jdbcType=VARCHAR},
+      #{application ,jdbcType=VARCHAR},
+      #{application_code ,jdbcType=VARCHAR},
+      #{application_name ,jdbcType=VARCHAR},
+      #{applicationToken ,jdbcType=VARCHAR},
+      #{applicationCredential ,jdbcType=VARCHAR},
+      #{ipWhiteList ,jdbcType=VARCHAR}
+    )
+  </insert>
+   <!-- CATEGORY UPDATE -->
+
+  <update id="updateBpmCategory" parameterType="com.yonyou.bpm.core.entity.CategoryEntity">
+    update BPM_CAT_CATEGORY 
+    set
+      REV_ = #{revisionNext, jdbcType=INTEGER},
+      CODE_ = #{code, jdbcType=VARCHAR},
+      NAME_ = #{name, jdbcType=VARCHAR},
+      TYPE_ = #{type, jdbcType=VARCHAR},
+      PRIORITY_ = #{priority, jdbcType=INTEGER},
+      MODIFY_TIME_ = #{modifyTime, jdbcType=TIMESTAMP},
+      PARENT_ = #{parent, jdbcType=VARCHAR},
+      ENABLE_ = #{enable, jdbcType=VARCHAR},
+      TENANT_ID_ = #{tenantId, jdbcType=VARCHAR},
+      ORG_ = #{org, jdbcType=VARCHAR},
+      ORG_CODE_ = #{org_code, jdbcType=VARCHAR},
+      ORG_NAME_ = #{org_name, jdbcType=VARCHAR},
+      APPLICATION_ = #{application, jdbcType=VARCHAR},
+      APPLICATION_CODE_ = #{application_code, jdbcType=VARCHAR},
+      APPLICATION_NAME_ = #{application_name, jdbcType=VARCHAR},
+      APPLICATION_TOKEN_ = #{applicationToken, jdbcType=VARCHAR},
+      APPLICATION_CREDENTIAL_ = #{applicationCredential, jdbcType=VARCHAR},
+      IPWHITELIST_ = #{ipWhiteList, jdbcType=VARCHAR}
+    where ID_ = #{id}
+      and REV_ = #{revision, jdbcType=INTEGER}
+  </update>
+  
+  <!-- CATEGORY DELETE -->
+
+  <delete id="deleteBpmCategory" parameterType="com.yonyou.bpm.core.entity.CategoryEntity">
+    delete from BPM_CAT_CATEGORY 
+    where ID_ = #{id} and REV_ = #{revision} 
+  </delete>
+  
+  <!-- CATEGORY RESULTMAP -->
+
+  <resultMap id="bpmCategoryResultMap" type="com.yonyou.bpm.core.entity.CategoryEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />
+    <result property="revision" column="REV_" jdbcType="INTEGER" />
+    <result property="code" column="CODE_" jdbcType="VARCHAR" />
+    <result property="name" column="NAME_" jdbcType="VARCHAR" />
+    <result property="type" column="TYPE_" jdbcType="VARCHAR" />
+    <result property="priority" column="PRIORITY_" jdbcType="INTEGER" />
+    <result property="createTime" column="CREATE_TIME_" jdbcType="TIMESTAMP" />
+    <result property="modifyTime" column="MODIFY_TIME_" jdbcType="TIMESTAMP" />
+    <result property="parent" column="PARENT_" jdbcType="VARCHAR" />
+    <result property="enable" column="ENABLE_" jdbcType="VARCHAR" />
+    <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+    <result property="org" column="ORG_" jdbcType="VARCHAR" />
+    <result property="org_code" column="ORG_CODE_" jdbcType="VARCHAR" />
+    <result property="org_name" column="ORG_NAME_" jdbcType="VARCHAR" />
+    <result property="application" column="APPLICATION_" jdbcType="VARCHAR" />
+    <result property="application_code" column="APPLICATION_CODE_" jdbcType="VARCHAR" />
+    <result property="application_name" column="APPLICATION_NAME_" jdbcType="VARCHAR" />
+    <result property="applicationToken" column="APPLICATION_TOKEN_" jdbcType="VARCHAR" />
+    <result property="applicationCredential" column="APPLICATION_CREDENTIAL_" jdbcType="VARCHAR" />
+    <result property="ipWhiteList" column="IPWHITELIST_" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="selectAllBpmCategory"  resultMap="bpmCategoryResultMap">
+    select * from BPM_CAT_CATEGORY order by CREATE_TIME_ desc
+  </select>
+  <select id="selectBpmCategory" parameterType="string" resultMap="bpmCategoryResultMap">
+    select * from BPM_CAT_CATEGORY where ID_ = #{id,jdbcType=VARCHAR}
+  </select>
+  <!-- CATEGORY SELECT -->
+  <select id="selectBpmCategories" parameterType="com.yonyou.bpm.core.impl.CategoryQueryParam" resultMap="bpmCategoryResultMap">
+    select * from BPM_CAT_CATEGORY 
+     <where>
+    <if test="categoryId!=null">
+    	ID_ = #{categoryId,jdbcType=VARCHAR} 
+    </if>
+     <if test="parentId!=null">
+    	and PARENT_ = #{parentId,jdbcType=VARCHAR} 
+    </if>
+    <if test="categoryIds!=null">
+    	and ID_ in
+    	<foreach collection="categoryIds" item="item" open="("  close=")" separator=",">
+    		#{item} 
+    	</foreach>
+    </if>
+    <if test="keyWord!=null">
+    	and (CODE_ like #{keyWord,jdbcType=VARCHAR} 
+    	      or
+    	     NAME_ like #{keyWord,jdbcType=VARCHAR} 
+    </if>
+    <if test="name!=null">
+    	and NAME_= #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="nameLike!=null">
+    	and NAME_ like #{nameLike,jdbcType=VARCHAR} 
+    </if>
+    <if test="nameLikeIgnoreCase != null">
+        and lower(NAME_) like #{nameLikeIgnoreCase}
+    </if>
+    <if test="code!=null">
+    	and CODE_= #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="codeLike!=null">
+    	and CODE_ like #{codeLike,jdbcType=VARCHAR} 
+    </if>
+    <if test="codeLikeIgnoreCase != null">
+        and lower(CODE_) like #{codeLikeIgnoreCase}
+    </if>
+    
+    <if test="createBefore!=null">
+    	and CREATE_TIME_ &lt;= #{createBefore,jdbcType=TIMESTAMP}
+    </if>
+    <if test="createAfter!=null">
+    	and CREATE_TIME_ &gt;= convert(datetime, #{createAfter}, 120)
+    </if>
+    
+    <if test="modifyBefore!=null">
+    	and MODIFY_TIME_ &lt;= #{modifyBefore,jdbcType=TIMESTAMP}
+    </if>
+    <if test="modifyAfter!=null">
+    	and MODIFY_TIME_ &gt;= #{modifyAfter,jdbcType=TIMESTAMP}
+    </if>
+    
+     <if test="tenantId!=null">
+    	and TENANT_ID_ = #{tenantId,jdbcType=VARCHAR}
+    </if>
+     <if test="tenantIdLike!=null">
+    	and TENANT_ID_ like #{tenantIdLike,jdbcType=VARCHAR}
+    </if>
+     <if test="withoutTenantId">
+    	and TENANT_ID_ is null
+   	 </if>
+     <if test="enable">
+    	and ENABLE_ ='1'
+   	 </if>
+   	  <if test="unable">
+    	and ENABLE_ !='1'
+   	 </if>
+   	  <if test="application!=null">
+    	and APPLICATION_ = #{application,jdbcType=VARCHAR}
+   	 </if>
+   	 <if test="withApplication">
+    	and APPLICATION_ is not null
+   	 </if>
+   	  </where>
+   	 <if test="orderBy!=null">
+   		 ${orderBy}
+   	 </if>
+   	
+  </select>
+   <select id="selectBpmCategoriesByNativeQuery" parameterType="java.util.Map" resultMap="bpmCategoryResultMap">
+   	${sql}
+   </select>
+   
+   <!-- CATEGORY SELECT -->
+  <select id="selectBpmCategoriesByUser" parameterType="com.yonyou.bpm.core.impl.CategoryLinkQueryParam" resultMap="bpmCategoryResultMap">
+    select * from BPM_CAT_CATEGORY CATEGORY where CATEGORY.ID_ in 
+    	(select LINK.CAT_ID_ from  bpm_cat_catlink LINK where CAT_ID_!=null
+    <if test="categoryId!=null">
+    	and LINK.CAT_ID_ = #{categoryId,jdbcType=VARCHAR} 
+    </if>
+    <if test="userId!=null">
+    	and ((LINK.LINK_ID_ = #{userId,jdbcType=VARCHAR}  AND LINK.TYPE_='user')
+    		or( LINK.LINK_ID_ in (select  CAST(role_id AS varchar(64)) from mgr_role_user where CAST(user_id AS varchar(64))=#{userId,jdbcType=VARCHAR}) and LINK.TYPE_='role' )
+    		) 
+    </if>
+    )
+  </select>
+</mapper>

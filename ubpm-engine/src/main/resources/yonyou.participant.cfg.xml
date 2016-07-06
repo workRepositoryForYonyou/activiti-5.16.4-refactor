@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd">
+ <bean id="defaultuser" class="com.yonyou.bpm.participant.defaultImpl.ParticipantConfigImpl">
+ 	<property name="code" value="defaultuser"></property>
+ 	<property name="name" value="默认用户"></property>
+ 	<property name="enable" value="true"></property>
+ 	<property name="priority" value="0"></property>
+ 	<property name="adapterClazz" value="com.yonyou.bpm.participant.defaultImpl.UserAdapter"></property>
+ </bean>
+ <bean id="USER" class="com.yonyou.bpm.participant.defaultImpl.ParticipantConfigImpl">
+ 	<property name="code" value="USER"></property>
+ 	<property name="name" value="用户"></property>
+ 	<property name="enable" value="true"></property>
+ 	<property name="priority" value="10"></property>
+ 	<property name="adapterClazz" value="com.yonyou.bpm.participantimpl.UserParticipantAdapter"></property>
+ </bean>
+ <bean id="ORG" class="com.yonyou.bpm.participant.defaultImpl.ParticipantConfigImpl">
+ 	<property name="code" value="ORG"></property>
+ 	<property name="name" value="组织"></property>
+ 	<property name="enable" value="true"></property>
+ 	<property name="priority" value="20"></property>
+ 	<property name="adapterClazz" value="com.yonyou.bpm.participantimpl.OrgParticipantAdapter"></property>
+ </bean>
+ <bean id="ROLE" class="com.yonyou.bpm.participant.defaultImpl.ParticipantConfigImpl">
+ 	<property name="code" value="ROLE"></property>
+ 	<property name="name" value="角色"></property>
+ 	<property name="enable" value="true"></property>
+ 	<property name="priority" value="30"></property>
+ 	<property name="adapterClazz" value="com.yonyou.bpm.participantimpl.RoleParticipantAdapter"></property>
+ </bean>
+</beans>

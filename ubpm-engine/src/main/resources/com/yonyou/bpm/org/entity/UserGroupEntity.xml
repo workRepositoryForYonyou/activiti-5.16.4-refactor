@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yonyou.bpm.org.entity.UserGroupEntity">
+
+  <resultMap id="UserGroupEntityResultMap" type="com.yonyou.bpm.org.entity.UserGroupEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />        
+    <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+    <result property="userId" column="USER_ID_" jdbcType="VARCHAR" />
+    <result property="groupId" column="GROUP_ID_" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="selectAllUserGroupEntity" parameterType="string" resultMap="UserGroupEntityResultMap">
+    select 
+		ID_,
+		TENANT_ID_,
+		USER_ID_,
+		GROUP_ID_
+    from BPM_ORG_USER_GROUP
+    where TENANT_ID_ = #value:VARCHAR#
+    order by TENANT_ID_,USER_ID_
+  </select>
+	
+  <select id="selectByUserGroupEntity" parameterType="com.yonyou.bpm.org.entity.UserGroupEntity" resultMap="UserGroupEntityResultMap">
+    select 
+		ID_,
+		TENANT_ID_,
+		USER_ID_,
+		GROUP_ID_
+    from BPM_ORG_USER_GROUP 
+     <where>
+	    <if test="id!=null">
+	    	ID_ = #id:VARCHAR#
+	    </if>
+	    <if test="tenantId!=null">
+	    	TENANT_ID_ = #tenantId:VARCHAR#
+	    </if>
+	    <if test="userId!=null">
+	    	USER_ID_ = #userId:VARCHAR#
+	    </if>
+	    <if test="groupId!=null">
+	    	GROUP_ID_ = #groupId:VARCHAR#
+	    </if>
+   	  </where>
+   	  order by TENANT_ID_,USER_ID_
+   </select>
+   
+   <select id="selectUserGroupEntityByNativeQuery" parameterType="java.util.Map" resultMap="UserGroupEntityResultMap">
+   		${sql}
+   </select>
+   
+</mapper>

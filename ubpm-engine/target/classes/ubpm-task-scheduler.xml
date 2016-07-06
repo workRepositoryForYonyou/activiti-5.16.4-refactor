@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+					    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<task:executor id="targetExecutor" pool-size="5"/>
+
+	<task:scheduler id="targetScheduler" pool-size="10"/>
+
+	<task:annotation-driven executor="targetExecutor" scheduler="targetScheduler"/>
+	
+	<!-- 仅当运行于  rest-server 时才执行超时任务的定时处理 -->
+	<beans profile="BPM_SERVER">
+		<bean id="taskDuedate" class="com.yonyou.bpm.scheduler.TaskTimeoutJob"/> 
+	</beans>
+	
+
+</beans>

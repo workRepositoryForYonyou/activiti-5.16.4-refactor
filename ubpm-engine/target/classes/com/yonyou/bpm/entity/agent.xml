@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yonyou.bpm.core.entity.AgentEntity">
+
+  <!-- AGENT INSERT -->
+
+  <insert id="insertBpmAgent" parameterType="com.yonyou.bpm.core.entity.AgentEntity" >
+    insert into BPM_ID_AGENT(ID_, REV_, NAME_, TYPE_, USER_ID_,AGENT_USER_ID_, CREATE_TIME_, MODIFY_TIME_,ENABLE_,CAT_ID_,PROC_DEF_KEY_,PROC_DEF_ID_,PROCESS_INSTANCE_ID_)
+    values (
+      #{id ,jdbcType=VARCHAR},
+      1,
+      #{name ,jdbcType=VARCHAR},
+      #{type ,jdbcType=VARCHAR},
+      #{userId ,jdbcType=VARCHAR},
+      #{agentUserId ,jdbcType=VARCHAR},
+      #{createTime ,jdbcType=TIMESTAMP},
+      #{modifyTime ,jdbcType=TIMESTAMP},
+      #{enable ,jdbcType=VARCHAR},
+      #{categoryId ,jdbcType=VARCHAR},
+      #{processDefinitionKey ,jdbcType=VARCHAR},
+      #{processDefinitionId ,jdbcType=VARCHAR},
+      #{processInstanceId ,jdbcType=VARCHAR}
+    )
+  </insert>
+   <!-- AGENT UPDATE -->
+
+  <update id="updateBpmAgent" parameterType="com.yonyou.bpm.core.entity.AgentEntity">
+    update BPM_ID_AGENT 
+    set
+      REV_ = #{revisionNext, jdbcType=INTEGER},
+      NAME_ = #{name, jdbcType=VARCHAR},
+      TYPE_ = #{type, jdbcType=VARCHAR},
+      USER_ID_ = #{userId, jdbcType=VARCHAR},
+      AGENT_USER_ID_ = #{agentUserId, jdbcType=VARCHAR},
+      MODIFY_TIME_ = #{modifyTime, jdbcType=TIMESTAMP},
+      ENABLE_ = #{enable, jdbcType=VARCHAR},
+      CAT_ID_ = #{categoryId, jdbcType=VARCHAR},
+      PROC_DEF_KEY_ = #{processDefinitionKey, jdbcType=VARCHAR},
+      PROC_DEF_ID_ = #{processDefinitionId, jdbcType=VARCHAR},
+      PROCESS_INSTANCE_ID_ = #{processInstanceId, jdbcType=VARCHAR}
+    where ID_ = #{id}
+      and REV_ = #{revision, jdbcType=INTEGER}
+  </update>
+  
+  <!-- AGENT DELETE -->
+
+  <delete id="deleteBpmAgent" parameterType="com.yonyou.bpm.core.entity.AgentEntity">
+    delete from BPM_ID_AGENT 
+    where ID_ = #{id} and REV_ = #{revision} 
+  </delete>
+  
+  <!-- AGENT RESULTMAP -->
+
+  <resultMap id="bpmAgentResultMap" type="com.yonyou.bpm.core.entity.AgentEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />
+    <result property="revision" column="REV_" jdbcType="INTEGER" />
+    <result property="name" column="NAME_" jdbcType="VARCHAR" />
+    <result property="type" column="TYPE_" jdbcType="VARCHAR" />
+    <result property="userId" column="USER_ID_" jdbcType="VARCHAR" />
+    <result property="agentUserId" column="AGENT_USER_ID_" jdbcType="VARCHAR" />
+    <result property="createTime" column="CREATE_TIME_" jdbcType="TIMESTAMP" />
+    <result property="modifyTime" column="MODIFY_TIME_" jdbcType="TIMESTAMP" />
+    <result property="enable" column="ENABLE_" jdbcType="VARCHAR" />
+    <result property="categoryId" column="CAT_ID_" jdbcType="VARCHAR" />
+    <result property="processDefinitionKey" column="PROC_DEF_KEY_" jdbcType="VARCHAR" />
+    <result property="processDefinitionId" column="PROC_DEF_ID_" jdbcType="VARCHAR" />
+    <result property="processInstanceId" column="PROCESS_INSTANCE_ID_" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="selectBpmAgentById" parameterType="string" resultMap="bpmAgentResultMap">
+    select * from BPM_ID_AGENT where ID_ = #{id,jdbcType=VARCHAR}
+  </select>
+  <!-- CATEGORY SELECT -->
+  <select id="selectBpmAgents" parameterType="com.yonyou.bpm.core.impl.CategoryQueryParam" resultMap="bpmAgentResultMap">
+    select * from BPM_ID_AGENT 
+     <where>
+	    <if test="agentId!=null">
+	    	ID_ = #{agentId,jdbcType=VARCHAR} 
+	    </if>
+	    <if test="type!=null">
+	    	and TYPE_ = #{type,jdbcType=VARCHAR} 
+	    </if>
+
+	    <if test="name!=null">
+	    	and NAME_= #{name,jdbcType=VARCHAR}
+	    </if>
+	    <if test="nameLike!=null">
+	    	and NAME_ like #{nameLike,jdbcType=VARCHAR} 
+	    </if>
+	    <if test="nameLikeIgnoreCase != null">
+	        and lower(NAME_) like #{nameLikeIgnoreCase}
+	    </if>
+	    <if test="userId!=null">
+	    	and USER_ID_= #{userId,jdbcType=VARCHAR}
+	    </if>
+	     <if test="agentUserId!=null">
+	    	and AGENT_USER_ID_= #{agentUserId,jdbcType=VARCHAR}
+	    </if>
+	    <if test="createBefore!=null">
+	    	and CREATE_TIME_ &lt;= #{createBefore,jdbcType=TIMESTAMP}
+	    </if>
+	    <if test="createAfter!=null">
+	    	and CREATE_TIME_ &gt;= convert(datetime, #{createAfter}, 120)
+	    </if>
+	    
+	    <if test="modifyBefore!=null">
+	    	and MODIFY_TIME_ &lt;= #{modifyBefore,jdbcType=TIMESTAMP}
+	    </if>
+	    <if test="modifyAfter!=null">
+	    	and MODIFY_TIME_ &gt;= #{modifyAfter,jdbcType=TIMESTAMP}
+	    </if>
+	     <if test="enable">
+	    	and ENABLE_ ='1'
+	   	 </if>
+	   	  <if test="unable">
+	    	and ENABLE_ !='1'
+	   	 </if>
+	   	 <if test="categoryIds!=null">
+	    	and CAT_ID_ in
+	    	<foreach collection="categoryIds" item="item" open="("  close=")" separator=",">
+	    		#{item} 
+	    	</foreach>
+	     </if>
+	     <if test="categoryId!=null">
+	    	and CAT_ID_ = #{categoryId,jdbcType=VARCHAR}
+	   	 </if>
+	   	 <if test="processDefinitionKey!=null">
+	    	and PROC_DEF_KEY_ = #{processDefinitionKey,jdbcType=VARCHAR}
+	   	 </if>
+	   	 <if test="processDefinitionId!=null">
+	    	and PROC_DEF_ID_ = #{processDefinitionId,jdbcType=VARCHAR}
+	   	 </if>
+	   	 <if test="processInstanceId!=null">
+	    	and PROCESS_INSTANCE_ID_ = #{processInstanceId,jdbcType=VARCHAR}
+	   	 </if>
+   	  </where>
+   	 <if test="orderBy!=null">
+   		 ${orderBy}
+   	 </if>
+   	
+   </select>
+   <select id="selectBpmAgentsByNativeQuery" parameterType="java.util.Map" resultMap="bpmAgentResultMap">
+   	${sql}
+   </select>
+   
+   
+</mapper>

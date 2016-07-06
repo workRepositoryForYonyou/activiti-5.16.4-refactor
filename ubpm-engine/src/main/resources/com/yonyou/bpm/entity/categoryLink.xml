@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yonyou.bpm.core.entity.CategoryLinkEntity">
+
+  <!-- CATEGORYLINK INSERT -->
+
+  <insert id="insertBpmCategoryLink" parameterType="com.yonyou.bpm.core.entity.CategoryLinkEntity" useGeneratedKeys="false">
+    insert into BPM_CAT_CATLINK(ID_, REV_, CAT_ID_, LINK_ID_,LINK_NAME_, TYPE_)
+    values (
+      #{id ,jdbcType=VARCHAR},
+      1,
+      #{categoryId ,jdbcType=VARCHAR},
+      #{linkId ,jdbcType=VARCHAR},
+      #{linkName ,jdbcType=VARCHAR},
+      #{type ,jdbcType=VARCHAR}
+    )
+  </insert>
+   <!-- CATEGORYLINK UPDATE -->
+
+  <update id="updateBpmCategoryLink" parameterType="com.yonyou.bpm.core.entity.CategoryLinkEntity">
+    update ${prefix}BPM_CAT_CATLINK 
+    set
+      REV_ = #{revisionNext, jdbcType=INTEGER},
+      CAT_ID_ = #{categoryId, jdbcType=VARCHAR},
+      LINK_ID_ = #{linkId, jdbcType=VARCHAR},
+      LINK_NAME_ = #{linkName, jdbcType=VARCHAR},
+      TYPE_ = #{type, jdbcType=VARCHAR}
+    where ID_ = #{id}
+      and REV_ = #{revision, jdbcType=INTEGER}
+  </update>
+  
+  <!-- CATEGORYLINK DELETE -->
+
+  <delete id="deleteBpmCategoryLink" parameterType="com.yonyou.bpm.core.entity.CategoryLinkEntity">
+    delete from BPM_CAT_CATLINK 
+    where ID_ = #{id} and REV_ = #{revision} 
+  </delete>
+  
+  <!-- CATEGORYLINK RESULTMAP -->
+
+  <resultMap id="bpmCategoryLinkResultMap" type="com.yonyou.bpm.core.entity.CategoryLinkEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />
+    <result property="revision" column="REV_" jdbcType="INTEGER" />
+    <result property="categoryId" column="CAT_ID_" jdbcType="VARCHAR" />
+    <result property="linkId" column="LINK_ID_" jdbcType="VARCHAR" />
+    <result property="linkName" column="LINK_NAME_" jdbcType="VARCHAR" />
+    <result property="type" column="TYPE_" jdbcType="VARCHAR" />
+  </resultMap>
+  
+ <!-- CATEGORYLINK SELECT -->
+   <select id="selectBpmCategoryLinksByNativeQuery" parameterType="java.util.Map" resultMap="bpmCategoryLinkResultMap">
+   	${sql}
+   </select>
+   <select id="selectBpmCategoryLinks" parameterType="com.yonyou.bpm.core.impl.CategoryLinkQueryParam" resultMap="bpmCategoryLinkResultMap">
+   	select * from BPM_CAT_CATLINK 
+   	<where>
+   	<if test="categoryLinkId!=null">
+    	 ID_ = #{categoryLinkId,jdbcType=VARCHAR} 
+    </if>
+   	<if test="categoryId!=null">
+    	and CAT_ID_ = #{categoryId,jdbcType=VARCHAR} 
+    </if>
+    <if test="userId!=null">
+    	and LINK_ID_ = #{userId,jdbcType=VARCHAR}  and TYPE_='user'
+    </if>
+     <if test="roleId!=null">
+    	and LINK_ID_ = #{roleId,jdbcType=VARCHAR}  and TYPE_='role'
+    </if>
+    </where>
+    
+   </select>
+   
+</mapper>

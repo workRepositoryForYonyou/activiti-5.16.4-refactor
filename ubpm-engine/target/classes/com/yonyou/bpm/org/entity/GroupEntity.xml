@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yonyou.bpm.org.entity.GroupEntity">
+
+  <resultMap id="GroupEntityResultMap" type="com.yonyou.bpm.org.entity.GroupEntity">
+    <id property="id" column="ID_" jdbcType="VARCHAR" />
+    <result property="code" column="CODE_" jdbcType="INTEGER" />
+    <result property="name" column="NAME_" jdbcType="VARCHAR" />
+    <result property="msg" column="MSG_" jdbcType="VARCHAR" />
+    <result property="createTime" column="CREATE_TIME_" jdbcType="CHAR" />
+    <result property="modifiedTime" column="MODIFIED_TIME_" jdbcType="CHAR" />
+    <result property="creator" column="CREATOR_" jdbcType="VARCHAR" />
+    <result property="modifier" column="MODIFIER_" jdbcType="VARCHAR" />
+        
+    <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="selectAllGroupEntity" parameterType="string" resultMap="GroupEntityResultMap">
+    select 
+		ID_,
+		CODE_,
+		NAME_,
+		MSG_,
+		CREATE_TIME_,
+		MODIFIED_TIME_,
+		CREATOR_,
+		MODIFIER_,
+		TENANT_ID_
+    from BPM_ORG_Group 
+    where TENANT_ID_ = #value:VARCHAR#
+  </select>
+	
+  <select id="selectByGroupEntity" parameterType="com.yonyou.bpm.org.entity.GroupEntity" resultMap="GroupEntityResultMap">
+    select 
+		ID_,
+		CODE_,
+		NAME_,
+		MSG_,
+		CREATE_TIME_,
+		MODIFIED_TIME_,
+		CREATOR_,
+		MODIFIER_,
+		TENANT_ID_
+    from BPM_ORG_Group 
+     <where>
+	    <if test="id!=null">
+	    	ID_ = #id:VARCHAR#
+	    </if>
+	    <if test="code!=null">
+	    	CODE_ = #code:VARCHAR#
+	    </if>
+	    <if test="name!=null">
+	    	NAME_ like '%$name$%'
+	    </if>
+	    <if test="tenantId!=null">
+	    	TENANT_ID_ = #tenantId:VARCHAR#
+	    </if>
+   	  </where>
+	  order by CODE_
+   </select>
+   
+   <select id="selectGroupEntityByNativeQuery" parameterType="java.util.Map" resultMap="GroupEntityResultMap">
+   		${sql}
+   </select>
+   
+</mapper>
